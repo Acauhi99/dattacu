@@ -7,12 +7,14 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 
+
 new class extends Component
 {
     public string $name = '';
     public string $email = '';
     public string $cnpj = '';
     public string $telefone = '';
+    public bool $editing = false;
     
     /**
      * Mount the component.
@@ -36,7 +38,6 @@ new class extends Component
             'name' => ['required', 'string', 'max:255'],
             'cnpj' => ['required', 'string', 'max:255'],
             'telefone' => ['required', 'string', 'max:255'],
-            'photo' => ['nullable', 'image', 'max:1024'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
         ]);
 
@@ -70,6 +71,8 @@ new class extends Component
 
         Session::flash('status', 'verification-link-sent');
     }
+
+    
 }; ?>
 
 <section>
@@ -80,67 +83,66 @@ new class extends Component
 
     </header>
 
-    <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
-        {{-- Nome --}}
+    <div class="mt-6 space-y-6">
+        {{-- Nome Atual --}}
         <div>
             <x-input-label for="name" :value="__('Nome')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <span class="mt-1 block w-full">{{ $name }}</span>
         </div>
 
-        {{-- CNPJ --}}
+        {{-- CNPJ Atual --}}
         <div>
             <x-input-label for="cnpj" :value="__('CNPJ')" />
-            <x-text-input wire:model="cnpj" id="cnpj" name="cnpj" type="text" class="mt-1 block w-full" autocomplete="cnpj" required/>
-            <x-input-error class="mt-2" :messages="$errors->get('cnpj')" />
+            <span class="mt-1 block w-full">{{ $cnpj }}</span>
         </div>
 
-        {{-- Telefone --}}
+        {{-- Telefone Atual --}}
         <div>
             <x-input-label for="telefone" :value="__('Telefone')" />
-            <x-text-input wire:model="telefone" id="telefone" name="telefone" type="text" class="mt-1 block w-full" autocomplete="telefone" required/>
-            <x-input-error class="mt-2" :messages="$errors->get('telefone')" />
+            <span class="mt-1 block w-full">{{ $telefone }}</span>
         </div>
 
-        {{-- Email --}}
+        {{-- Email Atual --}}
         <div>
             <x-input-label for="email" :value="__('E-mail')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="email" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
-
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Your email address is unverified.') }}
-
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
-
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
-            @endif
+            <span class="mt-1 block w-full">{{ $email }}</span>
         </div>
 
-        {{-- Imagem --}}
-        <div>
-            <x-input-label for="photo" :value="__('Imagem')" />
-            <x-text-input wire:model="photo" id="photo" name="photo" type="file" class="mt-1 block w-full"/>
-            <x-input-error class="mt-2" :messages="$errors->get('photo')" />
-        </div>
+        <button wire:click="$set('editing', true)" class="text-blue-500 underline cursor-pointer">
+        {{ __('Editar informações') }}
+        </button>
 
-        {{-- Salvar --}}
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            <x-action-message class="me-3" on="profile-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
+        {{-- Modal --}}
+        @if($editing)
+        <div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4" style="width: 400px; max-width: 80%;">
+                <form wire:submit.prevent="updateProfileInformation">
+                    <div class="mb-4">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
+                        <input type="text" id="name" wire:model="name" class="mt-1 p-2 border rounded-md w-full" >
+                    </div>
+    
+                    <div class="mb-4">
+                        <label for="cnpj" class="block text-sm font-medium text-gray-700">CNPJ</label>
+                        <input type="text" id="cnpj" wire:model="cnpj" class="mt-1 p-2 border rounded-md w-full" >
+                    </div>
+    
+                    <div class="mb-4">
+                        <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                        <input type="text" id="telefone" wire:model="telefone" class="mt-1 p-2 border rounded-md w-full" >
+                    </div>
+    
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                        <input type="text" id="email" wire:model="email" class="mt-1 p-2 border rounded-md w-full" >
+                    </div>
+    
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2">Save</button>
+                    <button wire:click="$set('editing', false)" class="text-red-500 underline cursor-pointer">Cancel</button>
+                </form>
+            </div>
         </div>
-    </form>
+        @endif
+    </div>
+
 </section>
