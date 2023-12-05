@@ -13,6 +13,8 @@ new #[Layout('layouts.guest')] class extends Component
 {
     public string $name = '';
     public string $email = '';
+    public string $cnpj = '';
+    public string $telefone = '';
     public string $password = '';
     public string $password_confirmation = '';
 
@@ -24,6 +26,8 @@ new #[Layout('layouts.guest')] class extends Component
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'cnpj' => ['required', 'string', 'max:255'],
+            'telefone' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -51,6 +55,21 @@ new #[Layout('layouts.guest')] class extends Component
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input wire:model="email" id="email" class="block mt-1 w-full" type="email" name="email" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- CNPJ -->
+        <div class="mt-4">
+            <x-input-label for="cnpj" :value="__('CNPJ')" />
+            <x-text-input wire:model="cnpj" id="cnpj" class="block mt-1 w-full" type="text" name="cnpj" required autocomplete="cnpj" />
+            <x-input-error :messages="$errors->get('cnpj')" class="mt-2" />
+        </div>
+
+        <!-- Telefone -->
+
+        <div class="mt-4">
+            <x-input-label for="telefone" :value="__('Telefone')" />
+            <x-text-input wire:model="telefone" id="telefone" class="block mt-1 w-full" type="text" name="telefone" required autocomplete="telefone" />
+            <x-input-error :messages="$errors->get('telefone')" class="mt-2" />
         </div>
 
         <!-- Password -->

@@ -11,7 +11,9 @@ new class extends Component
 {
     public string $name = '';
     public string $email = '';
-
+    public string $cnpj = '';
+    public string $telefone = '';
+    
     /**
      * Mount the component.
      */
@@ -19,6 +21,8 @@ new class extends Component
     {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->cnpj = Auth::user()->cnpj;
+        $this->telefone = Auth::user()->telefone;
     }
 
     /**
@@ -87,21 +91,21 @@ new class extends Component
         {{-- CNPJ --}}
         <div>
             <x-input-label for="cnpj" :value="__('CNPJ')" />
-            <x-text-input wire:model="cnpj" id="cnpj" name="cnpj" type="text" class="mt-1 block w-full" required/>
+            <x-text-input wire:model="cnpj" id="cnpj" name="cnpj" type="text" class="mt-1 block w-full" autocomplete="cnpj" required/>
             <x-input-error class="mt-2" :messages="$errors->get('cnpj')" />
         </div>
 
         {{-- Telefone --}}
         <div>
             <x-input-label for="telefone" :value="__('Telefone')" />
-            <x-text-input wire:model="telefone" id="telefone" name="telefone" type="text" class="mt-1 block w-full" required/>
-            <x-input-error class="mt-2" :messages="$errors->get('cnpj')" />
+            <x-text-input wire:model="telefone" id="telefone" name="telefone" type="text" class="mt-1 block w-full" autocomplete="telefone" required/>
+            <x-input-error class="mt-2" :messages="$errors->get('telefone')" />
         </div>
 
         {{-- Email --}}
         <div>
             <x-input-label for="email" :value="__('E-mail')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -130,8 +134,7 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('photo')" />
         </div>
 
-        
-
+        {{-- Salvar --}}
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
