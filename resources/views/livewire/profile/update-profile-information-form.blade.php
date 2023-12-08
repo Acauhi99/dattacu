@@ -114,8 +114,8 @@ new class extends Component
 
         {{-- Modal --}}
         @if($editing)
-        <div class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4" style="width: 400px; max-width: 80%;">
+        <div class="fixed inset-0 flex items-center justify-center">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 shadow-lg" style="width: 400px; max-width: 80%;>
                 <form wire:submit.prevent="updateProfileInformation">
                     <div class="mb-4">
                         <label for="name" class="block text-sm font-medium text-gray-700">Nome</label>
@@ -132,14 +132,34 @@ new class extends Component
                         <input type="text" id="telefone" wire:model="telefone" class="mt-1 p-2 border rounded-md w-full" >
                     </div>
     
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
-                        <input type="text" id="email" wire:model="email" class="mt-1 p-2 border rounded-md w-full" >
-                    </div>
-    
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2">Save</button>
-                    <button wire:click="$set('editing', false)" class="text-red-500 underline cursor-pointer">Cancel</button>
-                </form>
+                    <!-- Seção de Email -->
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                    <input type="email" id="email" wire:model="email" class="mt-1 p-2 border rounded-md w-full" required>
+                    <x-input-error class="mt-2" :messages="$errors->get('email')" />
+
+                    @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
+                        <div>
+                            <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
+                                {{ __('Your email address is unverified.') }}
+
+                                <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                    {{ __('Click here to re-send the verification email.') }}
+                                </button>
+                            </p>
+
+                            @if (session('status') === 'verification-link-sent')
+                                <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
+                                    {{ __('A new verification link has been sent to your email address.') }}
+                                </p>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2">Save</button>
+                <button wire:click="$set('editing', false)" class="text-red-500 underline cursor-pointer">Cancel</button>
+            </form>
             </div>
         </div>
         @endif
